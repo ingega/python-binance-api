@@ -17,7 +17,7 @@ NO_ACCEPT_PARAMETERS = []
 
 class BinanceRESTAPI(object):
     host = "www.binance.com"
-    base_path = "/api"
+    base_path = "/fapi" # let´s future it!!!!
     wapi_base_path = "/wapi"
     protocol = "https"
     api_name = "Binance"
@@ -26,68 +26,28 @@ class BinanceRESTAPI(object):
         self.api_key = api_key
         self.secret_key = secret_key
 
-    ping = bind_method(
-            path="/v1/ping",
-            method="GET",
-            accepts_parameters=NO_ACCEPT_PARAMETERS,
-            response_type="empty")
-
-    server_time = bind_method(
-            path="/v1/time",
-            method="GET",
-            accepts_parameters=NO_ACCEPT_PARAMETERS,
-            response_type="entry",
-            root_class=Entry)
-
-    depth = bind_method(
-            path="/v1/depth",
-            method="GET",
-            accepts_parameters=["symbol", "limit"],
-            response_type="entry",
-            root_class=Depth)
-
-    aggregate_trades = bind_method(
-            path="/v1/aggTrades",
-            method="GET",
-            accepts_parameters=["symbol", "from_id", "start_time", "end_time", "limit"],
-            response_type="list",
-            root_class=AggregateTrade)
-
+   # Just Klines and Orders
     klines = bind_method(
             path="/v1/klines",
             method="GET",
             accepts_parameters=["symbol", "interval", "limit", "start_time", "end_time"],
             response_type="list",
             root_class=Candlestick)
-
-    statistics_24hr = bind_method( 
-            path="/v1/ticker/24hr",
-            method="GET",
-            accepts_parameters=["symbol"],
-            response_type="entry",
-            root_class=Statistics)
-
-    all_prices = bind_method(
-            path="/v1/ticker/allPrices",
-            method="GET",
-            accepts_parameters=NO_ACCEPT_PARAMETERS,
-            response_type="list",
-            root_class=Price)
-
-    all_book_tickers = bind_method(
-            path="/v1/ticker/allBookTickers",
-            method="GET",
-            accepts_parameters=NO_ACCEPT_PARAMETERS,
-            response_type="list",
-            root_class=Ticker)
-
+    
     new_order = bind_method(
-            path="/v3/order",
+            path="/v1/order",
             method="POST",
             accepts_parameters=["symbol", "side", "type", "time_in_force", "quantity", "price", "new_client_order_id", "stop_price", "iceberg_qty", "timestamp"],
             signature=True,
             response_type="entry",
             root_class=Order)
+    
+    query_order = bind_method(
+            path="/v1/order"
+            method="GET"
+            accepts_parameters=["symbol","orderId","origClientOrderId","recvWindow","timestamp"]
+            response_type="list"
+            root_class=order)
 
     new_order_test = bind_method(
             path="/v3/order/test",
@@ -96,16 +56,8 @@ class BinanceRESTAPI(object):
             signature=True,
             response_type="empty")
 
-    query_order = bind_method(
-            path="/v3/order",
-            method="GET",
-            accepts_parameters=["symbol", "order_id", "orig_client_order_id", "recv_window", "timestamp"],
-            signature=True,
-            response_type="entry",
-            root_class=Order)
-
     cancel_order = bind_method(
-            path="/v3/order",
+            path="/v1/order",
             method="DELETE",
             accepts_parameters=["symbol", "order_id", "orig_client_order_id", "new_client_order_id", "recv_window", "timestamp"],
             signature=True,
@@ -113,7 +65,7 @@ class BinanceRESTAPI(object):
             root_class=Order)
 
     current_open_orders = bind_method(
-            path="/v3/openOrders",
+            path="/v1/openOrders",
             method="GET",
             accepts_parameters=["symbol", "recv_window", "timestamp"],
             signature=True,
@@ -121,20 +73,12 @@ class BinanceRESTAPI(object):
             root_class=Order)
 
     all_orders = bind_method(
-            path="/v3/allOrders",
+            path="/v1/allOrders",
             method="GET",
             accepts_parameters=["symbol", "order_id", "limit", "recv_window", "timestamp"],
             signature=True,
             response_type="list",
             root_class=Order)
-
-    account = bind_method(
-            path="/v3/account",
-            method="GET",
-            accepts_parameters=["recv_window", "timestamp"],
-            signature=True,
-            response_type="entry",
-            root_class=Account)
 
     my_trades = bind_method(
             path="/v3/myTrades",
@@ -143,52 +87,6 @@ class BinanceRESTAPI(object):
             signature=True,
             response_type="list",
             root_class=Trade)
-
-    start_user_data_stream = bind_method(
-            path="/v1/userDataStream",
-            method="POST",
-            accepts_parameters=NO_ACCEPT_PARAMETERS,
-            api_key_required=True,
-            response_type="entry",
-            root_class=Entry)
-
-    keepalive_user_data_stream = bind_method(
-            path="/v1/userDataStream",
-            method="PUT",
-            accepts_parameters=["listen_key"],
-            api_key_required=True,
-            response_type="empty")
-
-    close_user_data_stream = bind_method(
-            path="/v1/userDataStream",
-            method="DELETE",
-            accepts_parameters=["listen_key"],
-            api_key_required=True,
-            response_type="empty")
-
-    withdraw = bind_method(
-            path="/v1/withdraw.html",
-            method="POST",
-            accepts_parameters=["asset", "address", "amount", "name", "recv_window", "timestamp"],
-            signature=True,
-            response_type="entry",
-            root_class=Entry)
-
-    deposit_history = bind_method(
-            path="/v1/getDepositHistory.html",
-            method="POST",
-            accepts_parameters=["asset", "status", "start_time", "end_time", "recv_window", "timestamp"],
-            signature=True,
-            response_type="entry",
-            root_class=Deposit)
-
-    withdraw_history = bind_method(
-            path="/v1/getWithdrawHistory.html",
-            method="POST",
-            accepts_parameters=["asset", "status", "start_time", "end_time", "recv_window", "timestamp"],
-            signature=True,
-            response_type="entry",
-            root_class=Withdraw)
 
 class BinanceWebSocketAPI(object):
     host = "stream.binance.com"
